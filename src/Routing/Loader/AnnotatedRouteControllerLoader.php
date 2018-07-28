@@ -2,6 +2,7 @@
 
 namespace BeSimple\I18nRoutingBundle\Routing\Loader;
 
+use BeSimple\I18nRoutingBundle\Routing\Annotation\I18nRoute;
 use BeSimple\I18nRoutingBundle\Routing\Exception\MissingLocaleException;
 use BeSimple\I18nRoutingBundle\Routing\Exception\MissingRouteLocaleException;
 use BeSimple\I18nRoutingBundle\Routing\RouteGenerator\I18nRouteGenerator;
@@ -26,12 +27,16 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
         parent::__construct($reader);
 
         $this->routeGenerator = $routeGenerator ?: new I18nRouteGenerator();
-        $this->setRouteAnnotationClass('BeSimple\\I18nRoutingBundle\\Routing\\Annotation\\I18nRoute');
+        $this->setRouteAnnotationClass('Symfony\\Component\\Routing\\Annotation\\Route');
     }
 
     protected function addRoute(RouteCollection $collection, $annot, $globals, \ReflectionClass $class, \ReflectionMethod $method)
     {
-        /** @var \BeSimple\I18nRoutingBundle\Routing\Annotation\I18nRoute $annot */
+        if (!$annot instanceof I18nRoute) {
+            parent::addRoute($collection, $annot, $globals, $class, $method);
+            return;
+        }
+
         $name = $annot->getName();
         if (null === $name) {
             $name = $this->getDefaultRouteName($class, $method);
@@ -65,27 +70,27 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
 
             if (!is_array($globals['locales'])) {
                 // This is a normal route
-                $path = $globals['locales'].$localesWithPaths;
+                $path = $globals['locales'] . $localesWithPaths;
                 $localesWithPaths = null;
             } else {
                 // Global contains the locales
                 $localesWithPaths = array();
                 foreach ($globals['locales'] as $locale => $localePath) {
-                    $localesWithPaths[$locale] = $localePath.$routePath;
+                    $localesWithPaths[$locale] = $localePath . $routePath;
                 }
             }
         } elseif (is_array($localesWithPaths) && !empty($globals['locales'])) {
             if (!is_array($globals['locales'])) {
                 // Global is a normal prefix
                 foreach ($localesWithPaths as $locale => $localePath) {
-                    $localesWithPaths[$locale] = $globals['locales'].$localePath;
+                    $localesWithPaths[$locale] = $globals['locales'] . $localePath;
                 }
             } else {
                 foreach ($localesWithPaths as $locale => $localePath) {
                     if (!isset($globals['locales'][$locale])) {
                         throw new MissingLocaleException(sprintf('Locale "%s" for controller %s::%s is expected to be part of the global configuration at class level.', $locale, $class->getName(), $method->getName()));
                     }
-                    $localesWithPaths[$locale] = $globals['locales'][$locale].$localePath;
+                    $localesWithPaths[$locale] = $globals['locales'][$locale] . $localePath;
                 }
             }
         } elseif (!is_array($localesWithPaths)) {
@@ -104,7 +109,7 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
         }
 
         $collection->addCollection(
-                $this->routeGenerator->generateRoutes($name, $localesWithPaths, $route)
+            $this->routeGenerator->generateRoutes($name, $localesWithPaths, $route)
         );
     }
 
@@ -115,66 +120,30 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
     {
         $globals = array(
             'locales' => '',
-            'requirements' => array(),
-            'options' => array(),
-            'defaults' => array(),
-            'schemes' => array(),
-            'methods' => array(),
-            'host' => '',
-            'condition' => '',
         );
 
-        /** @var \BeSimple\I18nRoutingBundle\Routing\Annotation\I18nRoute $annot */
         if ($annot = $this->reader->getClassAnnotation($class, $this->routeAnnotationClass)) {
-            if (null !== $annot->getLocales()) {
+            if ($annot instanceof I18nRoute && null !== $annot->getLocales()) {
                 $globals['locales'] = $annot->getLocales();
-            }
-
-            if (null !== $annot->getRequirements()) {
-                $globals['requirements'] = $annot->getRequirements();
-            }
-
-            if (null !== $annot->getOptions()) {
-                $globals['options'] = $annot->getOptions();
-            }
-
-            if (null !== $annot->getDefaults()) {
-                $globals['defaults'] = $annot->getDefaults();
-            }
-
-            if (null !== $annot->getSchemes()) {
-                $globals['schemes'] = $annot->getSchemes();
-            }
-
-            if (null !== $annot->getMethods()) {
-                $globals['methods'] = $annot->getMethods();
-            }
-
-            if (null !== $annot->getHost()) {
-                $globals['host'] = $annot->getHost();
-            }
-
-            if (null !== $annot->getCondition()) {
-                $globals['condition'] = $annot->getCondition();
             }
         }
 
-        return $globals;
+        return array_merge(parent::getGlobals($class), $globals);
     }
 
     /**
      * Configures the _controller default parameter of a given Route instance.
      *
-     * @param Route             $route  A route instance
-     * @param \ReflectionClass  $class  A ReflectionClass instance
+     * @param Route $route A route instance
+     * @param \ReflectionClass $class A ReflectionClass instance
      * @param \ReflectionMethod $method A ReflectionClass method
-     * @param mixed             $annot  The annotation class instance
+     * @param mixed $annot The annotation class instance
      *
      * @throws \LogicException When the service option is specified on a method
      */
     protected function configureRoute(Route $route, \ReflectionClass $class, \ReflectionMethod $method, $annot)
     {
-        $route->setDefault('_controller', $class->getName().'::'.$method->getName());
+        $route->setDefault('_controller', $class->getName() . '::' . $method->getName());
     }
 
     /**

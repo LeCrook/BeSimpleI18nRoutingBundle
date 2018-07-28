@@ -1,9 +1,9 @@
 {
-    "name": "besimple/i18n-routing-bundle",
+    "name": "lecrook/i18n-routing-bundle",
     "type": "symfony-bundle",
     "description": "Full routing internationalized on your Symfony2 project ",
     "keywords": ["routing", "internationalisation", "Symfony2", "BeSimpleI18nRoutingBundle"],
-    "homepage": "https://github.com/BeSimple/BeSimpleI18nRoutingBundle",
+    "homepage": "https://github.com/LeCrook/BeSimpleI18nRoutingBundle",
     "license": "MIT",
     "authors": [
         {
@@ -20,24 +20,20 @@
         },
         {
             "name": "BeSimple Community",
-            "homepage": "https://github.com/BeSimple/BeSimpleI18nRoutingBundle/contributors"
+            "homepage": "https://github.com/LeCrook/BeSimpleI18nRoutingBundle/contributors"
         }
     ],
     "require": {
         "php": ">=5.3.2",
-
         "symfony/routing": "~2.3 || ~3.0",
         "symfony/config": "~2.3 || ~3.0"
     },
     "require-dev": {
         "doctrine/dbal": "~2.2",
-
         "symfony/dependency-injection": "~2.3 || ~3.0",
         "symfony/http-kernel": "~2.3 || ~3.0",
         "symfony/translation": "~2.3 || ~3.0",
-
         "phpunit/phpunit": "~4.7@stable",
-
         "matthiasnoback/symfony-dependency-injection-test": "^0.7",
         "matthiasnoback/symfony-config-test": "^1.4"
     },
