@@ -18,7 +18,7 @@ When you create an I18N route and you go on it with your browser, the locale wil
 ## Installation
 
 ```bash
-composer.phar require besimple/i18n-routing-bundle
+composer.phar require lecrook/i18n-routing-bundle
 ```
 
 ```php

@@ -1,3 +1,15 @@
 phpunit.xml
 composer.lock
 vendor/
+
+\.idea/BeSimpleI18nRoutingBundle\.iml
+
+\.idea/misc\.xml
+
+\.idea/modules\.xml
+
+\.idea/php\.xml
+
+\.idea/vcs\.xml
+
+\.idea/workspace\.xml

@@ -12,10 +12,10 @@ use Symfony\Component\Routing\Annotation\Route as BaseRoute;
  */
 class I18nRoute extends BaseRoute
 {
-    private $locales;
-    private $requirements = array();
-    private $methods = array();
-    private $schemes = array();
+    protected $locales;
+    protected $requirements = array();
+    protected $methods = array();
+    protected $schemes = array();
 
     /**
      * Constructor.
@@ -30,7 +30,6 @@ class I18nRoute extends BaseRoute
             $data['locales'] = $data['value'];
             unset($data['value']);
         }
-
         parent::__construct($data);
     }
 
@@ -44,16 +43,6 @@ class I18nRoute extends BaseRoute
         return $this->locales;
     }
 
-    public function setPath($path)
-    {
-        throw new \Exception('Bad method call.');
-    }
-
-    public function getPath()
-    {
-        throw new \Exception('Bad method call.');
-    }
-
     public function setRequirements($requirements)
     {
         if (isset($requirements['_method'])) {
@@ -61,13 +50,11 @@ class I18nRoute extends BaseRoute
                 $this->methods = explode('|', $requirements['_method']);
             }
         }
-
         if (isset($requirements['_scheme'])) {
             if (0 === count($this->schemes)) {
                 $this->schemes = explode('|', $requirements['_scheme']);
             }
         }
-
         $this->requirements = $requirements;
     }
 

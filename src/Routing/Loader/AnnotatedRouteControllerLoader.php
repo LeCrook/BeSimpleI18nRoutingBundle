@@ -34,6 +34,7 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
     {
         if (!$annot instanceof I18nRoute) {
             parent::addRoute($collection, $annot, $globals, $class, $method);
+
             return;
         }
 
